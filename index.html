@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord social — Bilan RH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#163029; --ink-soft:#3d564e; --paper:#f4f1e9; --card:#ffffff;
+  --line:#e3ddd0; --accent:#c2603d; --accent-d:#a44d2d; --teal:#2e6e63;
+  --gold:#d8a548; --muted:#8a9690; --grid:#ece7db;
+  --shadow:0 1px 2px rgba(22,48,41,.04), 0 8px 24px rgba(22,48,41,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Archivo",system-ui,sans-serif;line-height:1.5;
+  background-image:radial-gradient(circle at 1px 1px, rgba(22,48,41,.035) 1px, transparent 0);
+  background-size:22px 22px;}
+.wrap{max-width:1140px;margin:0 auto;padding:38px 26px 60px}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(30px,5vw,46px);line-height:1.02;margin:.18em 0 .12em;letter-spacing:-.01em}
+.sub{color:var(--ink-soft);font-size:15px}
+.tag{display:inline-block;margin-top:12px;font-size:12px;background:#fff;border:1px solid var(--line);
+  border-radius:999px;padding:5px 13px;color:var(--ink-soft);box-shadow:var(--shadow)}
+.tag b{color:var(--ink)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:30px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 15px;box-shadow:var(--shadow);
+  opacity:0;transform:translateY(8px);animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+.kpi .lab{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .val{font-family:"Fraunces",serif;font-weight:600;font-size:34px;line-height:1.05;margin-top:7px;letter-spacing:-.02em}
+.kpi .val small{font-size:15px;font-weight:500;color:var(--ink-soft);font-family:"Archivo"}
+.kpi .note{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
+.kpi.acc{background:linear-gradient(160deg,#1b362e,#163029);border-color:#163029}
+.kpi.acc .lab{color:#9fc3b6}.kpi.acc .val{color:#fff}.kpi.acc .note{color:#bcd4cb}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* grid cartes graph */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 20px 14px;box-shadow:var(--shadow)}
+.card.full{grid-column:1 / -1}
+.card h3{font-family:"Fraunces",serif;font-weight:600;font-size:18px;margin:0 0 2px;letter-spacing:-.01em}
+.card .hint{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin-top:8px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.gline{stroke:var(--grid);stroke-width:1}
+.axt{fill:var(--muted);font-size:11px;font-family:"Archivo"}
+.barv{transition:opacity .15s}.barv:hover{opacity:.78}
+
+/* lecture analyste */
+.read{background:linear-gradient(160deg,#1b362e,#163029);color:#eef3f0;border-radius:18px;padding:24px 26px;margin-top:18px;box-shadow:var(--shadow)}
+.read h3{font-family:"Fraunces",serif;font-weight:600;font-size:19px;margin:0 0 14px;color:#fff}
+.read ul{margin:0;padding:0;list-style:none;display:grid;gap:11px}
+.read li{position:relative;padding-left:24px;font-size:14.5px;color:#d9e4df}
+.read li::before{content:"";position:absolute;left:2px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+footer{margin-top:34px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.7}
+footer b{color:var(--ink-soft)}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Tableau de bord social · Ressources humaines</div>
+    <h1>Bilan RH &amp; pilotage social</h1>
+    <div class="sub" id="sub"></div>
+    <div class="tag">Projet de démonstration — données fictives · réalisé par <b>Pierre-Antoine Beugnot</b></div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="grid">
+    <div class="card full">
+      <h3>Évolution de l'effectif</h3>
+      <p class="hint">Effectif inscrit en fin de mois — 24 mois</p>
+      <div id="c_eff"></div>
+    </div>
+
+    <div class="card">
+      <h3>Taux d'absentéisme mensuel</h3>
+      <p class="hint">Jours d'absence / jours théoriques (%)</p>
+      <div id="c_abs"></div>
+    </div>
+
+    <div class="card">
+      <h3>Mouvements de personnel</h3>
+      <p class="hint">Entrées et sorties par trimestre</p>
+      <div id="c_flux"></div>
+      <div class="legend"><span><i style="background:var(--teal)"></i>Entrées</span><span><i style="background:var(--accent)"></i>Sorties</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Effectif par service</h3>
+      <p class="hint">Répartition des salariés</p>
+      <div id="c_serv"></div>
+    </div>
+
+    <div class="card">
+      <h3>Pyramide des âges</h3>
+      <p class="hint">Salariés par tranche d'âge</p>
+      <div id="c_age"></div>
+    </div>
+
+    <div class="card full">
+      <h3>Motifs d'absence</h3>
+      <p class="hint">Répartition des jours d'absence par motif</p>
+      <div id="c_mot" style="display:flex;gap:26px;align-items:center;flex-wrap:wrap"></div>
+    </div>
+  </section>
+
+  <section class="read">
+    <h3>Lecture de l'analyste</h3>
+    <ul id="reads"></ul>
+  </section>
+
+  <footer>
+    <b>Avertissement :</b> jeu de données entièrement fictif, généré pour illustrer une méthode d'analyse RH.<br>
+    Pipeline : génération &amp; traitement des données en Python → calcul des indicateurs → restitution.<br>
+    Pierre-Antoine Beugnot · Data Analyst — pabeugnot@gmail.com
+  </footer>
+</div>
+
+<script>
+const DATA = {"entreprise": "ACME Industries (données fictives)", "periode": "Janvier 2024 – Décembre 2025", "kpi": {"effectif": 353, "turnover": 14.2, "absenteisme": 4.76, "at_total": 27, "tf_at": 23.2, "anciennete": 5.8, "part_femmes": 41, "part_hommes": 59}, "effectif_mensuel": {"mois": ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"], "valeurs": [304, 303, 307, 310, 310, 309, 315, 319, 322, 325, 331, 335, 336, 335, 336, 336, 343, 345, 348, 352, 350, 349, 348, 353]}, "absenteisme_mensuel": {"mois": ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"], "valeurs": [6.69, 4.35, 5.74, 5.01, 4.85, 3.65, 3.93, 4.97, 2.88, 5.23, 5.87, 6.68, 6.26, 4.63, 3.87, 4.54, 3.82, 2.94, 3.97, 3.17, 4.82, 4.07, 6.14, 6.35]}, "flux_trim": {"trim": ["2024Q1", "2024Q2", "2024Q3", "2024Q4", "2025Q1", "2025Q2", "2025Q3", "2025Q4"], "entrees": [22, 12, 21, 24, 15, 19, 16, 15], "sorties": [20, 10, 8, 11, 14, 10, 11, 12]}, "par_service": {"labels": ["Production", "Logistique", "Commercial", "R&D", "Support & Admin", "Maintenance"], "valeurs": [116, 59, 38, 41, 43, 23]}, "par_age": {"labels": ["< 30 ans", "30-39 ans", "40-49 ans", "50 ans et +"], "valeurs": [52, 104, 111, 53]}, "motifs_absence": {"labels": ["Maladie", "Accident du travail", "Maternité / Paternité", "Autres"], "valeurs": [4950, 958, 1356, 657]}, "insights": ["Le taux d'absentéisme global s'établit à 4.76 %, avec un pic en 2024-01 porté par les arrêts maladie (saisonnalité hivernale).", "Le turnover annuel atteint 14.2 % ; les départs se concentrent en début d'année et en septembre.", "27 accidents du travail sur la période (taux de fréquence 23.2), à suivre via un plan de prévention ciblé.", "Pyramide des âges marquée par les 40-49 ans : anticiper les départs et la transmission des compétences."]};
+const PAL = ["#2e6e63","#c2603d","#d8a548","#5a8fa3","#8a6ea8","#b0734a"];
+const $ = (id)=>document.getElementById(id);
+const fmtMois = (s)=>{const[y,m]=s.split("-");return m+"/"+y.slice(2);};
+
+/* sous-titre + KPI ---------------------------------------------------------*/
+$("sub").textContent = DATA.entreprise + "  ·  " + DATA.periode;
+const k = DATA.kpi;
+const cards = [
+  ["Effectif", k.effectif, "", "fin de période"],
+  ["Turnover annuel", k.turnover, "%", "départs / effectif moyen"],
+  ["Absentéisme", k.absenteisme, "%", "tous motifs", true],
+  ["Accidents du travail", k.at_total, "", "taux de fréquence "+k.tf_at],
+  ["Ancienneté moyenne", k.anciennete, " ans", "tous services"],
+  ["Mixité F / H", k.part_femmes+" / "+k.part_hommes, "%", "part femmes / hommes"],
+];
+$("kpis").innerHTML = cards.map((c,i)=>`
+  <div class="kpi ${c[4]?'acc':''}" style="animation-delay:${i*70}ms">
+    <div class="lab">${c[0]}</div>
+    <div class="val">${c[1]}<small>${c[2]}</small></div>
+    <div class="note">${c[3]}</div>
+  </div>`).join("");
+
+/* helpers SVG --------------------------------------------------------------*/
+function svg(w,h){return `<svg viewBox="0 0 ${w} ${h}" role="img">`;}
+function yGrid(x0,x1,y,val,W){return `<line class="gline" x1="${x0}" y1="${y}" x2="${x1}" y2="${y}"/>`+
+  `<text class="axt" x="${x0-8}" y="${y+4}" text-anchor="end">${val}</text>`;}
+
+/* aire + ligne -------------------------------------------------------------*/
+function lineArea(el,labels,vals,color){
+  const W=1000,H=300,pl=46,pr=14,pt=18,pb=34;
+  const mn=Math.min(...vals)*0.97, mx=Math.max(...vals)*1.02;
+  const X=i=>pl+i*(W-pl-pr)/(labels.length-1);
+  const Y=v=>pt+(H-pt-pb)*(1-(v-mn)/(mx-mn));
+  let g="";for(let t=0;t<=4;t++){const v=mn+(mx-mn)*t/4;g+=yGrid(pl,W-pr,Y(v),Math.round(v),W);}
+  const pts=vals.map((v,i)=>`${X(i)},${Y(v)}`).join(" ");
+  const area=`${pl},${H-pb} `+pts+` ${W-pr},${H-pb}`;
+  let xl="";labels.forEach((l,i)=>{if(i%4===0||i===labels.length-1)xl+=`<text class="axt" x="${X(i)}" y="${H-12}" text-anchor="middle">${fmtMois(l)}</text>`;});
+  let dots=vals.map((v,i)=>`<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="${color}"><title>${fmtMois(labels[i])} : ${v}</title></circle>`).join("");
+  $(el).innerHTML=svg(W,H)+g+
+    `<polygon points="${area}" fill="${color}" opacity=".10"/>`+
+    `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`+
+    dots+xl+`</svg>`;
+}
+
+/* barres verticales --------------------------------------------------------*/
+function bars(el,labels,vals,color,unit){
+  const W=1000,H=300,pl=40,pr=10,pt=16,pb=34;
+  const mx=Math.max(...vals)*1.12;
+  const bw=(W-pl-pr)/labels.length;
+  const Y=v=>pt+(H-pt-pb)*(1-v/mx);
+  let g="";for(let t=0;t<=3;t++){const v=mx*t/3;g+=yGrid(pl,W-pr,pt+(H-pt-pb)*(1-t/3),Math.round(v),W);}
+  let b="";labels.forEach((l,i)=>{const x=pl+i*bw+bw*0.16,w=bw*0.68,y=Y(vals[i]);
+    b+=`<rect class="barv" x="${x}" y="${y}" width="${w}" height="${H-pb-y}" rx="3" fill="${color}"><title>${fmtMois(l)} : ${vals[i]}${unit||''}</title></rect>`;
+    if(i%4===0||i===labels.length-1)b+=`<text class="axt" x="${x+w/2}" y="${H-12}" text-anchor="middle">${fmtMois(l)}</text>`;});
+  $(el).innerHTML=svg(W,H)+g+b+`</svg>`;
+}
+
+/* barres groupées ----------------------------------------------------------*/
+function grouped(el,labels,a,b){
+  const W=1000,H=300,pl=40,pr=10,pt=16,pb=34;
+  const mx=Math.max(...a,...b)*1.15, bw=(W-pl-pr)/labels.length;
+  const Y=v=>pt+(H-pt-pb)*(1-v/mx);
+  let g="";for(let t=0;t<=3;t++)g+=yGrid(pl,W-pr,pt+(H-pt-pb)*(1-t/3),Math.round(mx*t/3),W);
+  let out="";labels.forEach((l,i)=>{const x=pl+i*bw, w=bw*0.30;
+    out+=`<rect class="barv" x="${x+bw*0.16}" y="${Y(a[i])}" width="${w}" height="${H-pb-Y(a[i])}" rx="3" fill="var(--teal)"><title>${l} · Entrées : ${a[i]}</title></rect>`;
+    out+=`<rect class="barv" x="${x+bw*0.16+w+3}" y="${Y(b[i])}" width="${w}" height="${H-pb-Y(b[i])}" rx="3" fill="var(--accent)"><title>${l} · Sorties : ${b[i]}</title></rect>`;
+    out+=`<text class="axt" x="${x+bw/2}" y="${H-12}" text-anchor="middle">${l.replace('20','’').replace('Q',' T')}</text>`;});
+  $(el).innerHTML=svg(W,H)+g+out+`</svg>`;
+}
+
+/* barres horizontales ------------------------------------------------------*/
+function hbars(el,labels,vals){
+  const W=1000,rowH=46,pad=8,labW=190,mx=Math.max(...vals)*1.04,H=labels.length*rowH+pad;
+  let out="";labels.forEach((l,i)=>{const y=pad+i*rowH, w=(W-labW-70)*vals[i]/mx;
+    out+=`<text x="0" y="${y+rowH/2+1}" class="axt" style="font-size:13px;fill:var(--ink)">${l}</text>`;
+    out+=`<rect class="barv" x="${labW}" y="${y+8}" width="${w}" height="${rowH-22}" rx="5" fill="${PAL[i%PAL.length]}"><title>${l} : ${vals[i]}</title></rect>`;
+    out+=`<text x="${labW+w+10}" y="${y+rowH/2+1}" class="axt" style="font-size:13px;fill:var(--ink-soft);font-weight:600">${vals[i]}</text>`;});
+  $(el).innerHTML=svg(W,H)+out+`</svg>`;
+}
+
+/* donut --------------------------------------------------------------------*/
+function donut(el,labels,vals){
+  const tot=vals.reduce((a,b)=>a+b,0),R=92,r=56,cx=110,cy=110;let a0=-Math.PI/2;
+  let arcs="";vals.forEach((v,i)=>{const a1=a0+v/tot*2*Math.PI;
+    const x0=cx+R*Math.cos(a0),y0=cy+R*Math.sin(a0),x1=cx+R*Math.cos(a1),y1=cy+R*Math.sin(a1);
+    const xi=cx+r*Math.cos(a1),yi=cy+r*Math.sin(a1),xj=cx+r*Math.cos(a0),yj=cy+r*Math.sin(a0);
+    const big=(a1-a0)>Math.PI?1:0;
+    arcs+=`<path d="M${x0},${y0} A${R},${R} 0 ${big} 1 ${x1},${y1} L${xi},${yi} A${r},${r} 0 ${big} 0 ${xj},${yj} Z" fill="${PAL[i%PAL.length]}"><title>${labels[i]} : ${Math.round(v/tot*100)}%</title></path>`;
+    a0=a1;});
+  const leg=labels.map((l,i)=>`<div style="font-size:13.5px;color:var(--ink-soft);margin:7px 0"><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${PAL[i%PAL.length]};margin-right:9px;vertical-align:-1px"></i>${l} — <b style="color:var(--ink)">${Math.round(vals[i]/tot*100)}%</b></div>`).join("");
+  $(el).innerHTML=`<svg viewBox="0 0 220 220" style="width:220px;flex:0 0 220px">${arcs}<text x="110" y="104" text-anchor="middle" style="font-family:Fraunces;font-size:30px;fill:var(--ink)">${tot.toLocaleString('fr-FR')}</text><text x="110" y="124" text-anchor="middle" class="axt">jours</text></svg><div style="flex:1;min-width:200px">${leg}</div>`;
+}
+
+/* rendu --------------------------------------------------------------------*/
+lineArea("c_eff", DATA.effectif_mensuel.mois, DATA.effectif_mensuel.valeurs, "var(--teal)");
+bars("c_abs", DATA.absenteisme_mensuel.mois, DATA.absenteisme_mensuel.valeurs, "var(--accent)", "%");
+grouped("c_flux", DATA.flux_trim.trim, DATA.flux_trim.entrees, DATA.flux_trim.sorties);
+hbars("c_serv", DATA.par_service.labels, DATA.par_service.valeurs);
+hbars("c_age", DATA.par_age.labels, DATA.par_age.valeurs);
+donut("c_mot", DATA.motifs_absence.labels, DATA.motifs_absence.valeurs);
+$("reads").innerHTML = DATA.insights.map(t=>`<li>${t}</li>`).join("");
+</script>
+</body>
+</html>
