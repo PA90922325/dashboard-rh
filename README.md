@@ -27,13 +27,9 @@ python3 build_dashboard.py      # tableau de bord
 # puis ouvrir tableau_de_bord_rh.html
 ```
 
-## Comment en parler (pour le posséder vraiment)
-Si un client ou un recruteur te questionne, tu peux dire, en vérité :
-- « J'ai simulé des données RH réalistes (effectif, mouvements, absences) sur 24 mois, puis j'ai calculé les indicateurs d'un bilan social et construit un tableau de bord pour les restituer. »
 - Le **turnover** = sorties sur 12 mois / effectif moyen. Le **taux d'absentéisme** = jours d'absence / jours théoriques travaillés. Le **taux de fréquence AT** = (nombre d'AT × 1 000 000) / heures travaillées — la norme française.
 - La **saisonnalité** de l'absentéisme (pic hivernal) est volontairement intégrée pour rendre la démo réaliste.
 
-> Règle d'honnêteté : ne présente comme acquis que ce que tu peux expliquer et refaire. Prends le temps de relire `generer_analyse.py` ligne par ligne — c'est court et commenté — pour pouvoir en parler sans hésiter.
 
 ## Idées d'extensions (prochaines versions)
 - Filtre interactif par service / par année
